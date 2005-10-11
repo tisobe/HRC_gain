@@ -1,0 +1,16 @@
+source /home/mta/.ascrc
+
+rm -rf param
+mkdir param
+source /home/mta/bin/reset_param
+setenv PFILES "${PDIRS}:${SYSPFILES}"
+set path = (/home/ascds/DS.release/bin/  $path)
+
+perl hrc_gain_find_ar_lac.perl
+
+perl hrc_gain_fit_gaus_on_hrc.perl candidate_list
+
+perl hrc_gain_plot_hrc_evol.perl
+
+perl hrc_gain_create_data_html.perl
+
