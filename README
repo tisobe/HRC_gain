@@ -1,0 +1,11 @@
+
+This set of scripts get AR Lac observation for HRC, and compute gain and pha shifts
+
+hrc_gain_wrap_script
+hrc_gain_main_script
+
+hrc_gain_find_ar_lac.perl
+hrc_gain_fit_gaus_on_hrc.perl
+hrc_gain_plot_hrc_evol.perl
+hrc_gain_create_data_html.perl
+
