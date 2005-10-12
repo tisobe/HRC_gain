@@ -20,6 +20,8 @@ use DBD::Sybase;
 $web_dir       = '/data/mta_www/mta_hrc/Tranding/Gain_data/';
 $house_keeping = '/data/mta_www/mta_hrc/Tranding/Gain_data/house_keeping/';
 $exc_dir       = '/data/mta/Script/HRC/Gain/Exc/';
+$bin_dir       = '/data/mta/MTA/bin/';
+$data_dir      = '/data/mta/MTA/data/';
 
 ################################################################
 
@@ -27,6 +29,8 @@ open(OUT, ">./directory_list");
 print OUT "$web_dir\n";
 print OUT "$house_keeping\n";
 print OUT "$exc_dir\n";
+print OUT "$bin_dir\n";
+print OUT "$data_dir\n";
 close(OUT);
 
 open(FH, "$house_keeping/hrc_obsid_list");
@@ -69,6 +73,7 @@ chop $db_passwd;
 #---------------------------------------
 
 open(OUT, '>./candidate_list');
+open(OUT2, ">> $house_keeping/hrc_obsid_list");
 $ent_cnt = 0;
 
 OUTER:
@@ -109,12 +114,10 @@ foreach $obsid (@data_list){
 
 	if($targname =~ /ARLAC/i){
 		print OUT "$obsid\n";
-		$ent_cnt++;
+		print OUT2 "$obsid\n";
 	}
 }
-
-if($ent_cnt > 0){
-	system("cat ./candidate_list >> $house_keeping/hrc_obsid_list");
-}
+close(OUT);
+close(OUT2);
 
 

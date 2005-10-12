@@ -21,6 +21,8 @@ close(FH);
 $web_dir       = $temp[0];
 $house_keeping = $temp[1];
 $exc_dir       = $temp[2];
+$bin_dir       = $temp[3];
+$data_dir      = $temp[4];
 
 $file = "$hosue_keeping/fitting_results";
 

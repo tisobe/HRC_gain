@@ -31,11 +31,16 @@ close(FH);
 $web_dir       = $temp[0];
 $house_keeping = $temp[1];
 $exc_dir       = $temp[2];
+$bin_dir       = $temp[3];
+$data_dir      = $temp[4];
 
 
 $file   = $ARGV[0];				# a list of AR Lac obsids
-$user   = $ARGV[1];
-$hakama = $ARGV[2];
+$user   = `cat $data_dir/.dare`;
+$hakama = `cat $data_dir/.hakama`;
+chomp $file;
+chomp $user;
+chomp $hakama;
 
 $list   = `cat $file`;
 @list   = split(/\s+/, $list);

@@ -22,9 +22,11 @@ close(FH);
 $web_dir       = $temp[0];
 $house_keeping = $temp[1];
 $exc_dir       = $temp[2];
+$bin_dir       = $temp[3];
+$data_dir      = $temp[4];
 
 
-$file = "$hosue_keeping/fitting_results";
+$file = "$house_keeping/fitting_results";
 
 @year = ();
 @date = ();
@@ -55,7 +57,7 @@ close(FH);
 #--- find fitting range in year
 #
 @temp = sort{$a<=>$b}@year;
-$max_yr = $temp[$tot-1];
+$max_yr = $temp[$tot-2];
 
 #
 #---HRC-I, Radial Plots
@@ -267,7 +269,7 @@ system('rm pgplot.ps');
 
 
 @temp = sort{$a<=>$b} @date;
-$xmax = $temp[$tot-1];
+$xmax = $temp[$tot -2];
 $xmax *= 1.1;
 
 pgbegin(0, '"./pgplot.ps"/cps',1,1);
@@ -410,10 +412,6 @@ system('rm pgplot.ps');
 #
 #---HRC-S, Time  Plots
 #
-
-@temp = sort{$a<=>$b} @date;
-$xmax = $temp[$tot-1];
-$xmax *= 1.1;
 
 pgbegin(0, '"./pgplot.ps"/cps',1,1);
 pgsubp(1,1);
