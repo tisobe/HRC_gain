@@ -17,8 +17,8 @@ use DBD::Sybase;
 #
 #--- setting directories
 #
-$web_dir       = '/data/mta_www/mta_hrc/Tranding/Gain_data/';
-$house_keeping = '/data/mta_www/mta_hrc/Tranding/Gain_data/house_keeping/';
+$web_dir       = '/data/mta_www/mta_hrc/Trending/Gain_data/';
+$house_keeping = '/data/mta_www/mta_hrc/Trending/Gain_data/house_keeping/';
 $exc_dir       = '/data/mta/Script/HRC/Gain/Exc/';
 $bin_dir       = '/data/mta/MTA/bin/';
 $data_dir      = '/data/mta/MTA/data/';

@@ -10,6 +10,19 @@
 #											#
 #########################################################################################
 
+($usec, $umin, $uhour, $umday, $umon, $uyear, $uwday, $uyday, $uisdst)= localtime(time);
+$year = $uyear + 1900;
+$month = $umon + 1;
+$today = "$year:$uyday:00:00:00";
+
+if($month < 10){
+        $month = '0'."$month";
+}
+if($umday < 10){
+        $umday = '0'."$umday";
+}
+
+
 open(FH, './directory_list');
 @temp = ();
 while(<FH>){
@@ -73,4 +86,29 @@ close(FH);
 
 print OUT '</table>',"\n";
 
+print OUT '<br><br>',"\n";
+print OUT 'Last Update:',"$month/$umday/$year\n";
+
 close(OUT);
+
+$line =  'Last Update:'."$month/$umday/$year";
+
+foreach $file ('hrc_i_pha_radial.html', 'hrc_i_pha_time.html', 'hrc_s_pha_radial.html', 'hrc_s_pha_time.html'){
+	open(FH, "$web_dir/../$file");
+	@save_line = ();
+	while(<FH>){
+		chomp $_;
+		if($_ !~ /Last Update:/){
+			push(@save_line, $_);
+		}else{
+			push(@save_line, $line);
+		}
+	}
+	close(FH);
+	
+	open(OUT, ">$web_dir/../$file");
+	foreach $ent (@save_line){
+		print OUT "$ent\n";
+	}
+	close(OUT);
+}
