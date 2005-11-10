@@ -112,3 +112,26 @@ foreach $file ('hrc_i_pha_radial.html', 'hrc_i_pha_time.html', 'hrc_s_pha_radial
 	}
 	close(OUT);
 }
+
+#
+#---- update the main hrc trending page
+#
+
+open(FH, '/data/mta_www/mta_hrc/Trending/hrc_trend.html');
+open(OUT, '>./temp_out.html');
+
+$chk = 0;
+while(<FH>){
+	chomp $_;
+	if($_ =~ /QE and Gain Variation with Time/ && $chk == 0){
+		print OUT '<li><a href = "#qe_gain">QE and Gain Variation with Time (HRC PHA Evolution)</a>';
+		print OUT " (last update: $month-$umday-$year)\n";
+		$chk++;
+	}else{
+		print OUT "$_\n";
+	}
+}
+close(OUT);
+close(FH);
+
+system("mv ./temp_out.html /data/mta_www/mta_hrc/Trending/hrc_trend.html");
