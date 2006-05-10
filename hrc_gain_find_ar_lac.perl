@@ -5,7 +5,7 @@ use DBD::Sybase;
 
 #########################################################################################
 #											#
-#	find_ar_lac.perl: this script find AR LAC obsid from a recent observations	#
+#	find_ar_lac.perl: this script finds AR LAC obsid from a recent observations	#
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
