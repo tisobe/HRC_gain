@@ -64,7 +64,7 @@ close(FH);
 
 $db_user="browser";
 $server="ocatsqlsrv";
-$db_passwd =`cat /data/mta/Script/ALIGNMENT/Abs_pointing/Exc/.targpass`;
+$db_passwd =`cat /data/mta/MTA/data/.targpass`;
 chop $db_passwd;
 
 
