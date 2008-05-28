@@ -8,7 +8,7 @@ use PGPLOT;
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: Oct 11, 2005						#
+#		last update: May 28, 2008						#
 #											#
 #########################################################################################
 
@@ -45,6 +45,7 @@ chomp $hakama;
 $list   = `cat $file`;
 @list   = split(/\s+/, $list);
 
+OUTER:
 foreach $obsid (@list){
 #
 #--- retrieve hrc evt2 file from archive
@@ -236,6 +237,9 @@ foreach $obsid (@list){
         	}
 	}
 	close(FH);
+	if($msum == 0){
+		next OUTER;
+	}
 
 	$half = 0.5 * $msum;		# $half is used to find a median
 
@@ -244,6 +248,7 @@ foreach $obsid (@list){
 	$max_pha  *= 2.0;
 	$csum      = 0;
 	$chk       = 0;
+	$median    = 0;
 
 	for($i = 0; $i < $max_pha; $i++){
 			
@@ -258,6 +263,10 @@ foreach $obsid (@list){
 		}
 	}
 	close(OUT);
+
+	if($median == 0){
+		$median = $max_pos;
+	}
 #
 #--- print out data for this observation
 #
@@ -265,8 +274,12 @@ foreach $obsid (@list){
 	@xbin = ();
 	@ybin = ();
 	open(OUT, '>./pha_dist');
+	OUTER2:
 	for($i = 0; $i < $max_pha; $i++){
         	print OUT "$i\t$count[$i]\n";
+		if($count[$i] == 0){
+			next OUTER2;
+		}
 		push(@xbin, $i);
 		push(@ybin, $count[$i]);
 	}

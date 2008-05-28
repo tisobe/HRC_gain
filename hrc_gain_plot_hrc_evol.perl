@@ -7,7 +7,7 @@ use PGPLOT;
 #												#
 #		author: t. isobe (tisobe@cfa.harvard.edu)					#
 #												#
-#		last update: Oct 11, 2005							#
+#		last update: May 27, 2008							#
 #												#
 #################################################################################################
 
@@ -75,14 +75,23 @@ pgswin(0, 18, 0, 1.0);
 $diff = $max_yr - 1999;
 $step = 15/$diff;
 $cnt  = 0;
+$cnt2 = 0;
 for($j = 1999; $j <= $max_yr; $j++){
 	$symbol = $j - 1997;
 	pgsci($symbol);
-	$xpos = $cnt * $step + $xmin;
-	$xpos2 = $xpos + 0.03 * $diff;
-	pgpt(1, $xpos, 0.5 , $symbol); 
-	pgptxt($xpos2, 0.3, 0, 0, ": $j");
-	$cnt++;
+	if($symbol < 10){
+		$xpos = $cnt * $step + $xmin;
+		$xpos2 = $xpos + 0.03 * $diff;
+		pgpt(1, $xpos, 1.0 , $symbol); 
+		pgptxt($xpos2, 0.7, 0, 0, ": $j");
+		$cnt++;
+	}else{
+		$xpos = $cnt2 * $step + $xmin;
+		$xpos2 = $xpos + 0.03 * $diff;
+		pgpt(1, $xpos, 0.5 , $symbol); 
+		pgptxt($xpos2, 0.3, 0, 0, ": $j");
+		$cnt2++;
+	}
 }
 pgsci(1);
 #
@@ -176,14 +185,23 @@ pgswin(0, 18, 0, 1.0);
 $diff = $max_yr - 1999;
 $step = 15/$diff;
 $cnt  = 0;
+$cnt2 = 0;
 for($j = 1999; $j <= $max_yr; $j++){
-	$symbol = $j - 1997;
-	pgsci($symbol);
-	$xpos = $cnt * $step + $xmin;
-	$xpos2 = $xpos + 0.03 * $diff;
-	pgpt(1, $xpos, 0.5 , $symbol); 
-	pgptxt($xpos2, 0.3, 0, 0, ": $j");
-	$cnt++;
+        $symbol = $j - 1997;
+        pgsci($symbol);
+        if($symbol < 10){
+                $xpos = $cnt * $step + $xmin;
+                $xpos2 = $xpos + 0.03 * $diff;
+                pgpt(1, $xpos, 1.0 , $symbol);
+                pgptxt($xpos2, 0.7, 0, 0, ": $j");
+                $cnt++;
+        }else{
+                $xpos = $cnt2 * $step + $xmin;
+                $xpos2 = $xpos + 0.03 * $diff;
+                pgpt(1, $xpos, 0.5 , $symbol);
+                pgptxt($xpos2, 0.3, 0, 0, ": $j");
+                $cnt2++;
+        }
 }
 pgsci(1);
 #
