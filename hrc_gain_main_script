@@ -6,7 +6,7 @@ source /home/mta/bin/reset_param
 setenv PFILES "${PDIRS}:${SYSPFILES}"
 set path = (/home/ascds/DS.release/bin/  $path)
 
-perl /data/mta/MTA/bin/hrc_gain_find_ar_lac.perl
+/proj/DS.ots/perl-5.10.0.SunOS5.8/bin/perl /data/mta/MTA/bin/hrc_gain_find_ar_lac.perl
 
 perl /data/mta/MTA/bin/hrc_gain_fit_gaus_on_hrc.perl ./candidate_list
 
