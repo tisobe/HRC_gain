@@ -7,7 +7,7 @@ use PGPLOT;
 #												#
 #		author: t. isobe (tisobe@cfa.harvard.edu)					#
 #												#
-#		last update: May 27, 2008							#
+#		last update: Jun 15, 2009							#
 #												#
 #################################################################################################
 
@@ -166,7 +166,7 @@ pgptxt(8, -7, 0, 0.5, "Radial Distance (Arcsec)");
 pgclos();
 
 $out_gif = "$web_dir/".'hrc_i_radial.gif';
-system("echo ''|gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| pnmflip -r270 |ppmtogif > $out_gif");
+system("echo ''|/opt/local/bin/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| pnmflip -r270 |ppmtogif > $out_gif");
 
 
 #

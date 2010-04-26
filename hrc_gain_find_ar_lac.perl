@@ -1,6 +1,5 @@
-#!/proj/DS.ots/perl-5.10.0.SunOS5.8/bin/perl
+/soft/ascds/DS.release/ots/bin/perl
 
-BEGIN { $ENV{'SYBASE'} = "/soft/SYBASE_OCS15"; }
 use DBI;
 use DBD::Sybase;
 
@@ -10,7 +9,7 @@ use DBD::Sybase;
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: May 20, 2008						#
+#		last update: Apr 26, 2010						#
 #											#
 #########################################################################################
 

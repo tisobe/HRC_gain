@@ -3,14 +3,15 @@ source /home/mta/.ascrc
 rm -rf param
 mkdir param
 source /home/mta/bin/reset_param
-setenv PFILES "${PDIRS}:${SYSPFILES}"
+setenv PFILES "${PDIRS}"
 set path = (/home/ascds/DS.release/bin/  $path)
+set path = (/home/ascds/DS.release/ots/bin/ $path)
 
-/proj/DS.ots/perl-5.10.0.SunOS5.8/bin/perl /data/mta/MTA/bin/hrc_gain_find_ar_lac.perl
+/proj/DS.ots/perl-5.10.0.SunOS5.8/bin/perl /data/mta/MTA/bin/Hrc_gain_find_ar_lac.perl
 
-perl /data/mta/MTA/bin/hrc_gain_fit_gaus_on_hrc.perl ./candidate_list
+/soft/ascds/DS.release/ots/bin/perl  /data/mta/MTA/bin/hrc_gain_fit_gaus_on_hrc.perl ./candidate_list
 
-perl /data/mta/MTA/bin/hrc_gain_plot_hrc_evol.perl
+/opt/local/bin/perl /data/mta/MTA/bin/hrc_gain_plot_hrc_evol.perl
 
-perl /data/mta/MTA/bin/hrc_gain_create_data_html.perl
+/opt/local/bin/perl /data/mta/MTA/bin/hrc_gain_create_data_html.perl
 

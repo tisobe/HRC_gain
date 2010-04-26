@@ -8,7 +8,7 @@ use PGPLOT;
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: May 28, 2008						#
+#		last update: Jun 15, 2009						#
 #											#
 #########################################################################################
 
@@ -334,7 +334,7 @@ foreach $obsid (@list){
 
 	$out_plot = "$web_dir/Plots/".'hrc'."$obsid".'_fits.gif';
 
-	system("echo ''|gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps|pnmcrop| pnmflip -r270 |ppmtogif > $out_plot");
+	system("echo ''|/opt/local/bin/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps|pnmcrop| pnmflip -r270 |ppmtogif > $out_plot");
 	system("rm pgplot.ps");
 	system("rm input_line pha_list *.fits zresult");
 
