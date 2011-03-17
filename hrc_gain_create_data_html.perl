@@ -6,7 +6,7 @@
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: May 27, 2008						#
+#		last update: Mar 17, 2011						#
 #											#
 #########################################################################################
 
@@ -23,19 +23,28 @@ if($umday < 10){
 }
 
 
-open(FH, './directory_list');
-@temp = ();
+##########################################################################
+#
+#----- reading directory locations
+#
+
+open(FH, "/data/mta/Script/HRC/Gain/house_keeping/dir_list");
+@atemp = ();
 while(<FH>){
         chomp $_;
-        push(@temp, $_);
+        push(@atemp, $_);
 }
 close(FH);
 
-$web_dir       = $temp[0];
-$house_keeping = $temp[1];
-$exc_dir       = $temp[2];
-$bin_dir       = $temp[3];
-$data_dir      = $temp[4];
+$bin_dir       = $atemp[0];
+$bdata_dir     = $atemp[1];
+$exc_dir       = $atemp[2];
+$web_dir       = $atemp[3];
+$data_dir      = $atemp[4];
+$house_keeping = $atemp[5];
+
+##########################################################################
+
 
 $file = "$hosue_keeping/fitting_results";
 
@@ -134,4 +143,4 @@ while(<FH>){
 close(OUT);
 close(FH);
 
-system("mv ./temp_out.html /data/mta_www/mta_hrc/Trending/hrc_trend.html");
+system("mv ./temp_out.html $web_dir/../hrc_trend.html");

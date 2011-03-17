@@ -8,7 +8,7 @@ use PGPLOT;
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: Jun 15, 2009						#
+#		last update: Mar 17, 2011						#
 #											#
 #########################################################################################
 
@@ -20,24 +20,31 @@ $dec = 45.7422544;
 
 #####################################
 
-open(FH, './directory_list');
-@temp = ();
+####################################################
+#
+#--- read directory locations
+#
+
+open(FH, "/data/mta/Script/HRC/Gain/house_keeping/dir_list");
+@atemp = ();
 while(<FH>){
-	chomp $_;
-	push(@temp, $_);
+        chomp $_;
+        push(@atemp, $_);
 }
 close(FH);
 
-$web_dir       = $temp[0];
-$house_keeping = $temp[1];
-$exc_dir       = $temp[2];
-$bin_dir       = $temp[3];
-$data_dir      = $temp[4];
+$bin_dir       = $atemp[0];
+$bdata_dir     = $atemp[1];
+$exc_dir       = $atemp[2];
+$web_dir       = $atemp[3];
+$data_dir      = $atemp[4];
+$house_keeping = $atemp[5];
 
+####################################################
 
 $file   = $ARGV[0];				# a list of AR Lac obsids
-$user   = `cat $data_dir/.dare`;
-$hakama = `cat $data_dir/.hakama`;
+$user   = `cat $bdata_dir/.dare`;
+$hakama = `cat $bdata_dir/.hakama`;
 chomp $file;
 chomp $user;
 chomp $hakama;
@@ -284,7 +291,7 @@ foreach $obsid (@list){
 		push(@ybin, $count[$i]);
 	}
 	close(OUT);
-	$data_name ="$web_dir/Data/". 'hrc'."$obsid".'_pha.dat';
+	$data_name ="$data_dir/". 'hrc'."$obsid".'_pha.dat';
 	system("mv pha_dist $data_name");
 #
 #--- fit a Gaussian profile around the peak. $a[*] are initial estimate of

@@ -1,4 +1,4 @@
-/soft/ascds/DS.release/ots/bin/perl
+#/soft/ascds/DS.release/ots/bin/perl
 
 use DBI;
 use DBD::Sybase;
@@ -9,7 +9,7 @@ use DBD::Sybase;
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: Apr 26, 2010						#
+#		last update: Mar 17, 2011						#
 #											#
 #########################################################################################
 
@@ -17,21 +17,22 @@ use DBD::Sybase;
 #
 #--- setting directories
 #
-$web_dir       = '/data/mta_www/mta_hrc/Trending/Gain_data/';
-$house_keeping = '/data/mta_www/mta_hrc/Trending/Gain_data/house_keeping/';
-$exc_dir       = '/data/mta/Script/HRC/Gain/Exc/';
-$bin_dir       = '/data/mta/MTA/bin/';
-$data_dir      = '/data/mta/MTA/data/';
+open(FH, "/data/mta/Script/HRC/Gain/house_keeping/dir_list");
+@atemp = ();
+while(<FH>){
+        chomp $_;
+        push(@atemp, $_);
+}
+close(FH);
+
+$bin_dir       = $atemp[0];
+$bdata_dir     = $atemp[1];
+$exc_dir       = $atemp[2];
+$web_dir       = $atemp[3];
+$data_dir      = $atemp[4];
+$house_keeping = $atemp[5];
 
 ################################################################
-
-open(OUT, ">./directory_list");
-print OUT "$web_dir\n";
-print OUT "$house_keeping\n";
-print OUT "$exc_dir\n";
-print OUT "$bin_dir\n";
-print OUT "$data_dir\n";
-close(OUT);
 
 open(FH, "$house_keeping/hrc_obsid_list");
 while(<FH>){
