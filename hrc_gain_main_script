@@ -15,3 +15,10 @@ set path = (/home/ascds/DS.release/ots/bin/ $path)
 
 /opt/local/bin/perl /data/mta/MTA/bin/hrc_gain_create_data_html.perl
 
+
+chgrp mtagroup /data/mta_www/mta_hrc/Trending/Gain_data/*
+chgrp mtagroup /data/mta_www/mta_hrc/Trending/Gain_data/Plots/*
+chgrp mtagroup /data/mta/Script/HRC/Gain/house_keeping/* 
+chgrp mtagroup /data/mta/Script/HRC/Gain/Data/* 
+
+
