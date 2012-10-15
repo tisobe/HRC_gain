@@ -9,7 +9,7 @@ use DBD::Sybase;
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: Mar 17, 2011						#
+#		last update: Oct 15, 2012						#
 #											#
 #########################################################################################
 
@@ -18,19 +18,12 @@ use DBD::Sybase;
 #--- setting directories
 #
 open(FH, "/data/mta/Script/HRC/Gain/house_keeping/dir_list");
-@atemp = ();
 while(<FH>){
-        chomp $_;
-        push(@atemp, $_);
+    chomp $_;
+    @atemp = split(/\s+/, $_);
+    ${$atemp[0]} = $atemp[1];
 }
 close(FH);
-
-$bin_dir       = $atemp[0];
-$bdata_dir     = $atemp[1];
-$exc_dir       = $atemp[2];
-$web_dir       = $atemp[3];
-$data_dir      = $atemp[4];
-$house_keeping = $atemp[5];
 
 ################################################################
 

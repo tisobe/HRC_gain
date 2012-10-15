@@ -7,7 +7,7 @@ use PGPLOT;
 #												#
 #		author: t. isobe (tisobe@cfa.harvard.edu)					#
 #												#
-#		last update: Jun 15, 2009							#
+#		last update: Oct 15, 2012							#
 #												#
 #################################################################################################
 
@@ -17,20 +17,12 @@ use PGPLOT;
 #
 
 open(FH, "/data/mta/Script/HRC/Gain/house_keeping/dir_list");
-@atemp = ();
 while(<FH>){
-        chomp $_;
-        push(@atemp, $_);
+    chomp $_;
+    @atemp = split(/\s+/, $_);
+    ${$atemp[0]} = $atemp[1];
 }
 close(FH);
-
-$bin_dir       = $atemp[0];
-$bdata_dir     = $atemp[1];
-$exc_dir       = $atemp[2];
-$web_dir       = $atemp[3];
-$data_dir      = $atemp[4];
-$house_keeping = $atemp[5];
-
 ##########################################################################
 
 $file = "$house_keeping/fitting_results";
@@ -80,23 +72,26 @@ pgsvp(0.05, 1.00, 0.96, 1.00);
 pgswin(0, 18, 0, 1.0);
 
 $diff = $max_yr - 1999;
-$step = 15/$diff;
+$step = 1.5;
 $cnt  = 0;
 $cnt2 = 0;
 for($j = 1999; $j <= $max_yr; $j++){
 	$symbol = $j - 1997;
 	pgsci($symbol);
-	if($symbol < 10){
+	if($symbol < 14){
 		$xpos = $cnt * $step + $xmin;
 		$xpos2 = $xpos + 0.03 * $diff;
 		pgpt(1, $xpos, 1.0 , $symbol); 
-		pgptxt($xpos2, 0.7, 0, 0, ": $j");
+		@ytemp = split(//, $j);
+		
+		pgptxt($xpos2, 0.7, 0, 0, ": $ytemp[2]$ytemp[3]");
 		$cnt++;
 	}else{
 		$xpos = $cnt2 * $step + $xmin;
 		$xpos2 = $xpos + 0.03 * $diff;
 		pgpt(1, $xpos, 0.5 , $symbol); 
-		pgptxt($xpos2, 0.3, 0, 0, ": $j");
+		@ytemp = split(//, $j);
+		pgptxt($xpos2, 0.2, 0, 0, ": $ytemp[2]$ytemp[3]");
 		$cnt2++;
 	}
 }
@@ -173,7 +168,7 @@ pgptxt(8, -7, 0, 0.5, "Radial Distance (Arcsec)");
 pgclos();
 
 $out_gif = "$web_dir/".'hrc_i_radial.gif';
-system("echo ''|/opt/local/bin/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| pnmflip -r270 |ppmtogif > $out_gif");
+system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
 
 
 #
@@ -190,23 +185,25 @@ pgsvp(0.05, 1.00, 0.96, 1.00);
 pgswin(0, 18, 0, 1.0);
 
 $diff = $max_yr - 1999;
-$step = 15/$diff;
+$step = 1.5;
 $cnt  = 0;
 $cnt2 = 0;
 for($j = 1999; $j <= $max_yr; $j++){
         $symbol = $j - 1997;
         pgsci($symbol);
-        if($symbol < 10){
+        if($symbol < 14){
                 $xpos = $cnt * $step + $xmin;
                 $xpos2 = $xpos + 0.03 * $diff;
                 pgpt(1, $xpos, 1.0 , $symbol);
-                pgptxt($xpos2, 0.7, 0, 0, ": $j");
+		@ytemp = split(//, $j);
+                pgptxt($xpos2, 0.7, 0, 0, ": $ytemp[2]$ytemp[3]");
                 $cnt++;
         }else{
                 $xpos = $cnt2 * $step + $xmin;
-                $xpos2 = $xpos + 0.03 * $diff;
+                $xpos2 = $xpos + 0.02 * $diff;
                 pgpt(1, $xpos, 0.5 , $symbol);
-                pgptxt($xpos2, 0.3, 0, 0, ": $j");
+		@ytemp = split(//, $j);
+                pgptxt($xpos2, 0.2, 0, 0, ": $ytemp[2]$ytemp[3]");
                 $cnt2++;
         }
 }
@@ -283,7 +280,7 @@ pgptxt(8, -7, 0, 0.5, "Radial Distance (Arcsec)");
 pgclos();
 
 $out_gif = "$web_dir".'hrc_s_radial.gif';
-system("echo ''|gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| pnmflip -r270 |ppmtogif > $out_gif");
+system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
 
 system('rm pgplot.ps');
 
@@ -430,7 +427,7 @@ pgptxt($xmid, -7, 0, 0.5, "Time (DOM)");
 pgclos();
 
 $out_gif = "$web_dir/".'hrc_i_time.gif';
-system("echo ''|gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| pnmflip -r270 |ppmtogif > $out_gif");
+system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
 
 system('rm pgplot.ps');
 
@@ -571,7 +568,7 @@ pgptxt($xmid, -7, 0, 0.5, "Time (DOM)");
 pgclos();
 
 $out_gif = "$web_dir/".'hrc_s_time.gif';
-system("echo ''|gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| pnmflip -r270 |ppmtogif > $out_gif");
+system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
 
 system('rm pgplot.ps');
 

@@ -8,7 +8,7 @@ use PGPLOT;
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: Mar 17, 2011						#
+#		last update: Oct 15, 2012						#
 #											#
 #########################################################################################
 
@@ -26,20 +26,12 @@ $dec = 45.7422544;
 #
 
 open(FH, "/data/mta/Script/HRC/Gain/house_keeping/dir_list");
-@atemp = ();
 while(<FH>){
-        chomp $_;
-        push(@atemp, $_);
+    chomp $_;
+    @atemp = split(/\s+/, $_);
+    ${$atemp[0]} = $atemp[1];
 }
 close(FH);
-
-$bin_dir       = $atemp[0];
-$bdata_dir     = $atemp[1];
-$exc_dir       = $atemp[2];
-$web_dir       = $atemp[3];
-$data_dir      = $atemp[4];
-$house_keeping = $atemp[5];
-
 ####################################################
 
 $file   = $ARGV[0];				# a list of AR Lac obsids
@@ -315,8 +307,12 @@ foreach $obsid (@list){
 	$xmin = 0; 
 	$xmax = $max_pha;
 	@temp = sort{$a<=>$b} @ybin;
+	$tcnt = 0;
+	foreach (@ybin){
+		$tcnt++;
+	}
 	$ymin = 0;
-	$ymax = 1.2 * $temp[$max_pha -1];
+	$ymax = 1.2 * $temp[$tcnt -1];
 	$symbol = 2;
 	
 	pgbegin(0, '"./pgplot.ps"/cps',1,1);
@@ -341,7 +337,7 @@ foreach $obsid (@list){
 
 	$out_plot = "$web_dir/Plots/".'hrc'."$obsid".'_fits.gif';
 
-	system("echo ''|/opt/local/bin/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps|pnmcrop| pnmflip -r270 |ppmtogif > $out_plot");
+	system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps|$op_dir/pnmcrop| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_plot");
 	system("rm pgplot.ps");
 	system("rm input_line pha_list *.fits zresult");
 
