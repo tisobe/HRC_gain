@@ -7,9 +7,14 @@ use PGPLOT;
 #												#
 #		author: t. isobe (tisobe@cfa.harvard.edu)					#
 #												#
-#		last update: Oct 15, 2012							#
+#		last update: Feb 06, 2013							#
 #												#
 #################################################################################################
+#
+#--- check whether this is a test case
+#
+$comp_test = $ARGV[0];
+chomp $comp_test;
 
 ##########################################################################
 #
@@ -25,7 +30,11 @@ while(<FH>){
 close(FH);
 ##########################################################################
 
-$file = "$house_keeping/fitting_results";
+if($comp_test =~ /test/i){
+	$file = "$test_web_dir/fitting_results";
+}else{
+	$file = "$house_keeping/fitting_results";
+}
 
 @year = ();
 @date = ();
@@ -167,7 +176,11 @@ pgptxt($xlpos, 36, 0,0, "PHA Gaussian Profile Width");
 pgptxt(8, -7, 0, 0.5, "Radial Distance (Arcsec)");
 pgclos();
 
-$out_gif = "$web_dir/".'hrc_i_radial.gif';
+if($comp_test =~ /test/i){
+	$out_gif = "$test_web_dir/".'hrc_i_radial.gif';
+}else{
+	$out_gif = "$web_dir/".'hrc_i_radial.gif';
+}
 system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
 
 
@@ -279,7 +292,11 @@ pgptxt($xlpos, 36, 0,0, "PHA Gaussian Profile Width");
 pgptxt(8, -7, 0, 0.5, "Radial Distance (Arcsec)");
 pgclos();
 
-$out_gif = "$web_dir".'hrc_s_radial.gif';
+if($comp_test =~ /test/i){
+	$out_gif = "$test_web_dir".'hrc_s_radial.gif';
+}else{
+	$out_gif = "$web_dir".'hrc_s_radial.gif';
+}
 system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
 
 system('rm pgplot.ps');
@@ -426,7 +443,11 @@ pgptxt($xlpos,37, 0,0, "PHA Gaussian Profile Width");
 pgptxt($xmid, -7, 0, 0.5, "Time (DOM)");
 pgclos();
 
-$out_gif = "$web_dir/".'hrc_i_time.gif';
+if($comp_test =~ /test/i){
+	$out_gif = "$test_web_dir/".'hrc_i_time.gif';
+}else{
+	$out_gif = "$web_dir/".'hrc_i_time.gif';
+}
 system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
 
 system('rm pgplot.ps');
@@ -567,7 +588,11 @@ pgptxt($xlpos,37, 0,0, "PHA Gaussian Profile Width");
 pgptxt($xmid, -7, 0, 0.5, "Time (DOM)");
 pgclos();
 
-$out_gif = "$web_dir/".'hrc_s_time.gif';
+if($comp_test =~ /test/i){
+	$out_gif = "$test_web_dir/".'hrc_s_time.gif';
+}else{
+	$out_gif = "$web_dir/".'hrc_s_time.gif';
+}
 system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
 
 system('rm pgplot.ps');

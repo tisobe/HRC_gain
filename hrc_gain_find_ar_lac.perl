@@ -9,9 +9,15 @@ use DBD::Sybase;
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: Oct 15, 2012						#
+#		last update: Mar 06, 2013						#
 #											#
 #########################################################################################
+
+#
+#--- check whether this is a test case
+#
+$comp_test = $ARGV[0];
+chomp $comp_test;
 
 ################################################################
 #
@@ -27,26 +33,49 @@ close(FH);
 
 ################################################################
 
-open(FH, "$house_keeping/hrc_obsid_list");
+#
+#--- prepere for test
+#
+if($comp_test =~ /test/i){
+	system("mkdir $test_web_dir");
+	system("mkdir $test_data_dir");
+	system("mkdir $test_web_dir/Plots");
+	system("cp $house_keeping/Test_prep/hrc_obsid_list $test_web_dir/.");
+	system("cp $house_keeping/Test_prep/fitting_results $test_web_dir/.");
+}
+
+if($comp_test =~ /test/i){
+	open(FH, "$test_web_dir/hrc_obsid_list");
+}else{
+	open(FH, "$house_keeping/hrc_obsid_list");
+}
+
 while(<FH>){
 	chomp $_;
 	push(@obsid_list, $_);
 }
 close(FH);	
 
-open(FH,'/data/mta_www/mp_reports/events/mta_events.html');
 @data_list = ();
-while(<FH>){
-        chomp $_;
-        if($_ =~ /HRC/i && $_ =~/Obsid/i){
-		@atemp = split(/Obsid:/, $_);
-		@btemp = split(/\'/, $atemp[1]);
-                push(@data_list, $btemp[0]);
-        }
+if($comp_test =~ /test/i){
+	open(FH, "$house_keeping/Test_prep/candidate");
+	while(<FH>){
+		chomp $_;
+		push(@data_list, $_);
+	}
+	close(FH);
+}else{
+	open(FH,'/data/mta_www/mp_reports/events/mta_events.html');
+	while(<FH>){
+        	chomp $_;
+        	if($_ =~ /HRC/i && $_ =~/Obsid/i){
+			@atemp = split(/Obsid:/, $_);
+			@btemp = split(/\'/, $atemp[1]);
+                	push(@data_list, $btemp[0]);
+        	}
+	}
+	close(FH);
 }
-close(FH);
-
-
 
 #-------------------------------------------------
 #------ open up database and read target name etc
@@ -67,7 +96,12 @@ chop $db_passwd;
 #---------------------------------------
 
 open(OUT, '>./candidate_list');
-open(OUT2, ">> $house_keeping/hrc_obsid_list");
+if($comp_test =~ /test/i){
+	open(OUT2, ">> $test_web_dir/hrc_obsid_list");
+}else{
+	open(OUT2, ">> $house_keeping/hrc_obsid_list");
+}
+
 $ent_cnt = 0;
 
 OUTER:

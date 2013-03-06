@@ -6,9 +6,15 @@
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: Oct 15, 2012						#
+#		last update: Mar 06, 2013						#
 #											#
 #########################################################################################
+
+#
+#--- check whether this is a test case
+#
+$comp_test = $ARGV[0];
+chomp $comp_test;
 
 ($usec, $umin, $uhour, $umday, $umon, $uyear, $uwday, $uyday, $uisdst)= localtime(time);
 $year = $uyear + 1900;
@@ -38,18 +44,32 @@ close(FH);
 
 ##########################################################################
 
+if($comp_test =~ /test/i){
+	$file = "$test_web_dir/fitting_results";
+	open(OUT, ">$test_web_dir/pha_data_list.html");
+}else{
+	$file = "$hosue_keeping/fitting_results";
+	open(OUT, ">$web_dir/pha_data_list.html");
+}
 
-$file = "$hosue_keeping/fitting_results";
-
-open(OUT, ">$web_dir/pha_data_list.html");
-
-print OUT '<HTML><BODY TEXT="#FFFFFF" BGCOLOR="#000000" LINK="#00CCFF" VLINK="yellow"ALINK="#FF0000" background="./stars.jpg">',"\n";
+print OUT "<!DOCTYPE html>\n";
+print OUT "<html>\n";
+print OUT "<head>\n";
 print OUT '<title> HRC PHA Evolution Data</title>',"\n";
+print OUT "<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n";
+print OUT "<style  type='text/css'>\n";
+print OUT "table{text-align:center;margin-left:auto;margin-right:auto;border-style:solid;border-spacing:8px;border-width:2px;border-collapse:separate}\n";
+print OUT "a:link {color:yellow;}\n";
+print OUT "a:visited {color:#FF0000;}\n";
+print OUT "</style>\n";
+print OUT "</head>\n";
 
-print OUT '<CENTER><H2>HRC PHA Evolution Data</H2></CENTER>',"\n";
+print OUT "<body style='color:#FFFFFF;background-color:#000000'>\n";
+
+print OUT '<h2 style="text-align:center;margin-left:auto;margin-right:auto">HRC PHA Evolution Data</h2>',"\n";
 
 
-print OUT '<table border=1 cellpadding=1 cellspacing=1>',"\n";
+print OUT '<table border=1>',"\n";
 print OUT '<tr>',"\n";
 print OUT '<th>OBSID</th>',"\n";
 print OUT '<th>Date</th>',"\n";
@@ -88,8 +108,12 @@ close(FH);
 
 print OUT '</table>',"\n";
 
-print OUT '<br><br>',"\n";
+print OUT "<div style='padding-top:20px;padding-bottom:10px'>\n";
+print OUT '<hr />',"\n";
+print OUT "</div>\n";
 print OUT 'Last Update:',"$month/$umday/$year\n";
+print OUT "</body>\n";
+print OUT "</html>\n";
 
 close(OUT);
 
@@ -126,7 +150,7 @@ $chk = 0;
 while(<FH>){
 	chomp $_;
 	if($_ =~ /QE and Gain Variation with Time/ && $chk == 0){
-		print OUT '<li><a href = "#qe_gain">QE and Gain Variation with Time (HRC PHA Evolution)</a>';
+		print OUT '<li  style="font-size:105%;font-weight:bold"><a href = "#qe_gain">QE and Gain Variation with Time (HRC PHA Evolution)</a>';
 		print OUT " (last update: $month-$umday-$year)\n";
 		$chk++;
 	}else{
@@ -136,4 +160,8 @@ while(<FH>){
 close(OUT);
 close(FH);
 
-system("mv ./temp_out.html $web_dir/../hrc_trend.html");
+if($comp_test =~ /test/i){
+	system("mv ./temp_out.html $test_web_dir/hrc_trend.html");
+}else{
+	system("mv ./temp_out.html $web_dir/../hrc_trend.html");
+}

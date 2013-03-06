@@ -8,9 +8,23 @@ use PGPLOT;
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: Oct 15, 2012						#
+#		last update: Feb 06, 2013						#
 #											#
 #########################################################################################
+
+#
+#---- check whether this is a test
+#
+OUTER:
+for($i = 0; $i < 10; $i++){
+	if($ARGV[$i] =~ /test/i){
+		$comp_test = 'test';
+		last OUTER;
+	}elsif($ARGV[$i] eq ''){
+		$comp_test = '';
+		last OUTER;
+	}
+}
 
 #####################################
 # AR Lac postion
@@ -283,7 +297,11 @@ foreach $obsid (@list){
 		push(@ybin, $count[$i]);
 	}
 	close(OUT);
-	$data_name ="$data_dir/". 'hrc'."$obsid".'_pha.dat';
+	if($comp_test =~ /test/i){
+		$data_name ="$test_data_dir/". 'hrc'."$obsid".'_pha.dat';
+	}else{
+		$data_name ="$data_dir/". 'hrc'."$obsid".'_pha.dat';
+	}
 	system("mv pha_dist $data_name");
 #
 #--- fit a Gaussian profile around the peak. $a[*] are initial estimate of
@@ -297,7 +315,12 @@ foreach $obsid (@list){
 #
 #--- fitting results are kept in "fitting_results" file
 #
-	open(RESULT, ">> $house_keeping/fitting_results");
+	if($comp_test =~ /test/i){
+		open(RESULT, ">>$test_web_dir/fitting_results");
+	}else{
+		open(RESULT, ">> $house_keeping/fitting_results");
+	}
+
 	print RESULT "$obsid\t$date_obs\t$detnam\t$ra_pnt\t$dec_pnt\t\t";
 	printf RESULT "%5.3f\t%5.3f\t%5.3f\t",$ra_diff,$dec_diff,$rad_diff;
 	print RESULT "$median\t$a[0]\t$a[1]\t$a[2]\n";
@@ -335,7 +358,11 @@ foreach $obsid (@list){
 	pglab("pha", "Counts",'');
 	pgclos();
 
-	$out_plot = "$web_dir/Plots/".'hrc'."$obsid".'_fits.gif';
+	if($comp_test =~ /test/i){
+		$out_plot = "$test_web_dir/Plots/".'hrc'."$obsid".'_fits.gif';
+	}else{
+		$out_plot = "$web_dir/Plots/".'hrc'."$obsid".'_fits.gif';
+	}
 
 	system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps|$op_dir/pnmcrop| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_plot");
 	system("rm pgplot.ps");
