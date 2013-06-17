@@ -1,4 +1,4 @@
-#/soft/ascds/DS.release/ots/bin/perl
+#!/usr/bin/env /usr/local/bin/perl
 
 use DBI;
 use DBD::Sybase;

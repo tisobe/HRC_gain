@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env /usr/local/bin/perl
 use PGPLOT;
 
 #########################################################################################
@@ -8,7 +8,7 @@ use PGPLOT;
 #											#
 #		author: t. isobe (tisobe@cfa.harvard.edu)				#
 #											#
-#		last update: Feb 06, 2013						#
+#		last update: Apr 17, 2013						#
 #											#
 #########################################################################################
 
@@ -82,7 +82,7 @@ foreach $obsid (@list){
 		$file = $_;
 	}
 	close(FH);
-	system("rm zlist");
+	system("rm -rf zlist");
 #
 #--- find information from the header
 #
@@ -120,7 +120,7 @@ foreach $obsid (@list){
 		}
 	}
 	close(FH);
-	system("rm zhead");
+	system("rm -rf zhead");
 #
 #--- find a difference between pointing direction and a position of AR Lac
 #
@@ -159,7 +159,7 @@ foreach $obsid (@list){
 		}
 	}
 	close(FH);
-	system("rm zstat");
+	system("rm -rf zstat");
 #
 #--- since the image is too large to handle as one piece, divide it into 8x8 area
 #
@@ -194,7 +194,7 @@ foreach $obsid (@list){
 					print OUT "$i, $j:   $max_val, $max_x, $max_y\n";
 				}
 			}
-			system("rm zstat");
+			system("rm -rf zstat");
 		}
 	}
 	close(OUT);
@@ -364,9 +364,9 @@ foreach $obsid (@list){
 		$out_plot = "$web_dir/Plots/".'hrc'."$obsid".'_fits.gif';
 	}
 
-	system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps|$op_dir/pnmcrop| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_plot");
-	system("rm pgplot.ps");
-	system("rm input_line pha_list *.fits zresult");
+	system("echo ''|gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps|pnmflip -r270 |ppmtogif > $out_plot");
+	system("rm -rf pgplot.ps");
+	system("rm -rf input_line pha_list *.fits zresult");
 
 }
 

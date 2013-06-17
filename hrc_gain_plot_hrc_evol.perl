@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env /usr/local/bin/perl
 use PGPLOT;
 
 #################################################################################################
@@ -7,7 +7,7 @@ use PGPLOT;
 #												#
 #		author: t. isobe (tisobe@cfa.harvard.edu)					#
 #												#
-#		last update: Feb 06, 2013							#
+#		last update: Apr 17, 2013							#
 #												#
 #################################################################################################
 #
@@ -181,7 +181,7 @@ if($comp_test =~ /test/i){
 }else{
 	$out_gif = "$web_dir/".'hrc_i_radial.gif';
 }
-system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
+system("echo ''|gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| pnmflip -r270 |ppmtogif > $out_gif");
 
 
 #
@@ -297,9 +297,9 @@ if($comp_test =~ /test/i){
 }else{
 	$out_gif = "$web_dir".'hrc_s_radial.gif';
 }
-system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
+system("echo ''|gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| pnmflip -r270 |ppmtogif > $out_gif");
 
-system('rm pgplot.ps');
+system('rm -rf pgplot.ps');
 
 
 #
@@ -448,9 +448,9 @@ if($comp_test =~ /test/i){
 }else{
 	$out_gif = "$web_dir/".'hrc_i_time.gif';
 }
-system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
+system("echo ''|gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| pnmflip -r270 |ppmtogif > $out_gif");
 
-system('rm pgplot.ps');
+system('rm -rf pgplot.ps');
 
 #
 #---HRC-S, Time  Plots
@@ -593,9 +593,9 @@ if($comp_test =~ /test/i){
 }else{
 	$out_gif = "$web_dir/".'hrc_s_time.gif';
 }
-system("echo ''|$op_dir/gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| $op_dir/pnmflip -r270 |$op_dir/ppmtogif > $out_gif");
+system("echo ''|gs -sDEVICE=ppmraw  -r256x256 -q -NOPAUSE -sOutputFile=-  ./pgplot.ps| pnmflip -r270 |ppmtogif > $out_gif");
 
-system('rm pgplot.ps');
+system('rm -rf pgplot.ps');
 
 	
 
