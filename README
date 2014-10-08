@@ -1,6 +1,21 @@
 
 This set of scripts get AR Lac observation for HRC, and compute gain and pha shifts
 
+----------
+directries
+----------
+'/data/mta/Script/HRC/Gain/HRC_gain/'               :   bin_dir
+'/data/mta/MTA/data/'                               : bdata_dir
+'/data/mta/Script/HRC/Gain/Exc/'                    : exc_dir
+'/data/mta_www/mta_hrc/Trending/Gain_data/'         : web_dir
+'/data/mta_www/mta_hrc/Trending/Gain_data/Plots/'   : plot_dir
+'/data/mta/Script/HRC/Gain/Data/'                   : data_dir
+'/data/mta/Script/HRC/Gain/house_keeping/'          : house_keeping
+'/usr/local/bin/'                                   : op_dir
+'/data/mta/Script/HRC/Gain/Test_out/'               : test_web_dir
+'/data/mta/Script/HRC/Gain/Test_out/Data/'          : test_data_dir
+'/data/mta/Script/Python_script2.7/'                : mta_dir
+
 
 --------------------
 hrc_gain_wrap_script
@@ -11,98 +26,99 @@ a wrapping script for hrc_gain_main_script
 --------------------
 hrc_gain_main_script
 --------------------
-a main script to drive all perl script
+a main script to drive all python scripts
 
 
 -------------------------
-hrc_gain_find_ar_lac.perl
+hrc_gain_wrap_script_test
 -------------------------
-this script finds AR LAC obsid from a recent observations
-
-Input
-	$house_keeping/hrc_obsid_list			past hrc obsids checked
-	/data/mta_www/mp_reports/events/mta_events.html	recent hrc obsids
-	$db_passwd					SQL password
-	SQL database					read target names
-
-Output
-	./directory_list				related directory list
-	./candidate_list				AR LAC obsid list
-	$house_keeping/hrc_obsid_list 			updated hrc obsid list
-
-you need to have an access to SQL database
+a wrapping script for hrc_gain_main_script_test
 
 
------------------------------
-hrc_gain_fit_gaus_on_hrc.perl
------------------------------
-find AR Lac from HRC and fit Gaussian profile on its PHA distribution
-
-Input
-	./directory_list
-	./candidate_list		$ARGV[0]
-	$user/$hakama			arc4gl user/passwd
-
-Output
-	$web_dir/Data/hrc<obsid>_pha.dat	pha distribution file
-	$house_keeping/fitting_results		pha fitting result
-	$web_dir/Plots/hrc<obsid>_fits.gif	plotted results
-
-Sub
-	gridls			grid serach least squares fit for a non linear function
-	chi_fit			compute chi sq value
-	app_func		function form to be fitted 
-
-you need to have an access to arc4gl database
+-------------------------
+hrc_gain_main_script_test
+-------------------------
+a main script to run test
 
 
----------------------------
-hrc_gain_plot_hrc_evol.perl
----------------------------
-plot evolution of HRC PHA from give data
+---------------
+hrc_gain_run.py
+---------------
 
-Input
-	./directory_list
-	$house_keeping/fitting_results
+a control script to find AR Lac observations and compute stat.
 
-Output
-	$web_dir/hrc_i_radial.gif
-	$web_dir/hrc_s_radial.gif
-	$web_dir/hrc_i_time.gif
-	$web_dir/hrc_s_time.gif
+Input: 
+If you supply AR Lac obsid as ARGV, it will calculate it stat unless it is already done. 
+Otherwise, it will extract HRC observations from a recent observation list
 
-Sub
-	ch_time_form_to_dom
-	conv_date_dom
-	
+Output: see hrc_gain_fit_voigt.py
 
-------------------------------
-hrc_gain_create_data_html.perl
-------------------------------
-create a html page version of fitting results 
+-------------------------
+hrc_gain_find_ar_lac.py
+-------------------------
 
-Input
-	./directory_list
+find  new AL Lac observations and put in a list.
 
-Output
-	$web_dir/pha_data_list.html
+Input: /data/mta_www/mp_reports/events/mta_events.html
+       sybase access --- from the sybase, get target name to check
+                         whether this is  an AR Lac observation.
 
-In the following html files, only date is updated.
- 
-	$web_dir/hrc_i_pha_radial.html
-	$web_dir/hrc_i_pha_time.html
-	$web_dir/hrc_s_pha_radial.html
-	$web_dir/hrc_s_pha_time.html
+Output: ./candidate_list
 
-	/data/mta_www/mta_hrc/Trending/hrc_trend.html
+--------------------
+hrc_gain_fit_gaus.py ---- this is not used; replaced by hrc_gain_fit_voigt.py
+--------------------
+
+extract hrc evt2 files and fit a normal distribution on pha values 
+
+Input: candidate_list
+       hrc evt2 fits files from archive using ar4gl.  
+
+Output: /data/mta/Script/HRC/Gain/Data/hrc<obsid>_pha.dat
+
+--------------------
+hrc_gain_fit_voigt.py
+--------------------
+
+extract hrc evt2 files and fit a voigt distribution on pha values 
+
+Input: candidate_list
+       hrc evt2 fits files from archive using ar4gl.  
+
+Output: /data/mta/Script/HRC/Gain/Data/hrc<obsid>_pha.dat
+        /data/mta/Script/HRC/Gain/house_keeping/fitting_results
+
+-----------------------
+hrc_gain_make_table.py
+-----------------------
+
+create a html display table of fitting resutls 
+
+Input: /data/mta/Script/HRC/Gain/house_keeping/fitting_results
+Output: /data/mta_www/mta_hrc/Trending/Gain_dat/fitting_results.html
 
 
+----------------------
+hrc_gain_trend_plot.py
+----------------------
+create time trend of Gaussian profiles fit on HRC PHA data 
 
-#--- setting directories
+Input: /data/mta/Script/HRC/Gain/house_keeping/fitting_results
+Output: /data/mta_www/mta_hrc/Trending/Gain_data/Plots/*png
 
-$web_dir       = '/data/mta_www/mta_hrc/Trending/Gain_data/';
-$house_keeping = '/data/mta_www/mta_hrc/Trending/Gain_data/house_keeping/';
-$exc_dir       = '/data/mta/Script/HRC/Gain/Exc/';
-$bin_dir       = '/data/mta/MTA/bin/';
-$data_dir      = '/data/mta/MTA/data/';
 
+-------
+Outputs
+-------
+
+/data/mta_www/mta_hrc/Trending/Gain_data/Data/hrc<obsid>_pha.dat 
+    ---- this is pha distribution data
+
+/data/mta/Script/HRC/Gain/hosue_keeping/fitting_results
+    ---- this is a voigt profile fitting results for the pha distributions
+
+/data/mta_www/mta_hrc/Trending/Gain_data/Plots/hrcf<obsid>_gfit.png
+    ---- plots of the pha distribution
+
+/data/mta_www/mta_hrc/Trending/Gain_dat/Trend_plots/hrc*png
+    ---- time trend plots
