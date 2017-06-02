@@ -1,1 +1,1 @@
-TERM=dummy; export TERM; /bin/tcsh  < /data/mta/Script/HRC/Gain/Scripts/hrc_gain_main_script
+/bin/tcsh  < /data/aschrc6/wilton/isobe/Project8/ArLac/Scripts2/hrc_gain_main_script

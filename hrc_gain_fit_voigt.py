@@ -6,7 +6,7 @@
 #                                                                                                   #
 #           author: t. isobe(tisobe@cfa.harvard.edu)                                                #
 #                                                                                                   #
-#           Last Update:    Sep 25, 2014                                                            #
+#           Last Update:    Mar 03, 2017                                                            #
 #                                                                                                   #
 #####################################################################################################
 
@@ -18,6 +18,7 @@ import random
 import operator
 import math
 import numpy
+import time
 import astropy.io.fits  as pyfits
 import unittest
 
@@ -30,7 +31,7 @@ ascdsenv = getenv('source /home/ascds/.ascrc -r release', shell='tcsh')
 #
 #--- reading directory list
 #
-path = '/data/mta/Script/HRC/Gain/house_keeping/dir_list_py'
+path = '/data/aschrc6/wilton/isobe/Project8/ArLac/Scripts2/house_keeping/dir_list_py'
 
 f= open(path, 'r')
 data = [line.strip() for line in f.readlines()]
@@ -51,8 +52,8 @@ sys.path.append(mta_dir)
 #
 import convertTimeFormat          as tcnv       #---- contains MTA time conversion routines
 import mta_common_functions       as mcf        #---- contains other functions commonly used in MTA scripts
-import hrc_gain_find_ar_lac       as arlist     #---- get AR Lac candidate list
 import fit_voigt_profile          as voigt
+#import find_coordinate            as fcoord
 
 from scipy.special import wofz
 from kapteyn import kmpfit
@@ -61,16 +62,10 @@ ln2 = numpy.log(2)
 #
 #--- temp writing file name
 #
-rtail  = int(10000 * random.random())       #---- put a romdom # tail so that it won't mix up with other scripts space
+rtail  = int(time.time())
 zspace = '/tmp/zspace' + str(rtail)
-#
-#--- a couple of things needed
-#
-dare   = mcf.get_val('.dare',   dir = bdata_dir, lst=1)
-hakama = mcf.get_val('.hakama', dir = bdata_dir, lst=1)
 
 working_dir = exc_dir + '/Working_dir/'
-
 #
 #--- AR Lac position
 #
@@ -100,23 +95,27 @@ def  hrc_gain_fit_voigt(candidate_list):
 #
     if len(candidate_list) > 0:
         for obsid in candidate_list:
-            file = extract_hrc_evt2(obsid)
-            if file == 'na':
+
+            print str(obsid)
+
+            hfile = extract_hrc_evt2(obsid)
+            if hfile == 'na':
                 continue
 #
 #--- get a file name header for the later use
 #
-            temp  = re.split('N', file)
+            temp  = re.split('N', hfile)
             hname = temp[0]
 #
 #--- extract information from the fits file header
 #
-            [obsid, detnam, date_obs, date_end, tstart, tstop, ra_pnt, dec_pnt,  ra_nom, dec_nom, roll_pnt, foc_len, defocus, sim_x, sim_y, sim_z]  = find_header_info(file)
+            hrdr = pyfits.getheader(hfile, 1)
 #
-#--- find the diffrence between real AR Lac position and nominal postion so that we can determin how much area we should include 
+#--- find the diffrence between real AR Lac position and nominal postion 
+#--- so that we can determin how much area we should include 
 #
-            ra_diff  = abs(ra - ra_nom) * 60.0
-            dec_diff = abs(dec - dec_nom) * 60.0
+            ra_diff  = abs(ra  - float(hrdr['ra_pnt']))  * 60.0
+            dec_diff = abs(dec - float(hrdr['dec_pnt'])) * 60.0
             rad_diff = math.sqrt(ra_diff * ra_diff + dec_diff * dec_diff)
 
             if rad_diff < 10.0:
@@ -126,11 +125,11 @@ def  hrc_gain_fit_voigt(candidate_list):
 #
 #--- find a location of the brightest object (assume it is AR Lac) in sky coordinates
 #
-            [x, y] = find_center(file)
+            [x, y] = find_center(hfile)
 #
 #--- extract pha values in the given area
 #
-            pha = extract_pha(file, x, y, fit_rad)
+            pha = extract_pha(hfile, x, y, fit_rad)
 #
 #--- create pha count distribution
 #
@@ -152,7 +151,7 @@ def  hrc_gain_fit_voigt(candidate_list):
 #
 #--- gzip file 
 #
-            cmd = 'gzip ' + outfile
+            cmd = 'gzip -f ' + outfile
             os.system(cmd)
 #
 #--- find median point
@@ -161,26 +160,33 @@ def  hrc_gain_fit_voigt(candidate_list):
 #
 #--- fit a voigt distribution on the data
 #
-            [center, width, amp, alphaD, alphaL, I, a_back, b_back] = voigt.fit_voigt_profile(pha_bin, pha_hist, type='voigt', plot_title=file)
+            [center, width, amp, alphaD, alphaL, I, a_back, b_back]  \
+               = voigt.fit_voigt_profile(pha_bin, pha_hist, type='voigt', plot_title=hfile)
 #
 #--- rename a plotting file
 #            
-            outfile = plot_dir + hname + '_gfit.png'
+            outfile = plot_dir  + 'Indivisual_Plots/' + hname + '_gfit.png'
             cmd     = 'mv out.png ' + outfile
             os.system(cmd)
 
-            line    = str(obsid) + '\t' + date_obs + '\t' + str(tstart) + '\t' + detnam + '\t' + str(ra_pnt) + '\t' + str(dec_pnt) + '\t\t'
-            line    = line + str(round(ra_diff,3)) + '\t' + str(round(dec_diff, 3))  + '\t' + str(round(rad_diff,3)) +  '\t' + str(med) + '\t\t'
-            line    = line + str(round(center, 3)) + '\t' + str(round(amp, 3)) + '\t' + str(round(width, 3)) + '\t'
-            line    = line + str(roll_pnt) + '\t' + str(foc_len) + '\t' + str(defocus) + '\t'
-            line    = line + str(sim_x) + '\t' + str(sim_y) + '\t' + str(sim_z) + '\t'
-            line    = line + str(round(alphaD,4)) + '\t' + str(round(alphaL,4)) + '\t' + str(round(center,3)) + '\t' + str(round(I,2)) + '\t' + str(round(a_back,2)) + '\t' + str(round(b_back,2)) + '\n'
+            line = str(obsid) + '\t' + str(hrdr['date-obs']) + '\t' + str(hrdr['tstart']) + '\t' 
+            line = line + hrdr['detnam']         + '\t'   + str(hrdr['ra_pnt'])   + '\t' 
+            line = line + str(hrdr['dec_pnt'])   + '\t\t' + str(round(ra_diff,3)) + '\t' 
+            line = line + str(round(dec_diff, 3))+ '\t'   + str(round(rad_diff,3))+ '\t' 
+            line = line + str(med)               + '\t\t' + str(round(center, 3)) + '\t' 
+            line = line + str(round(amp, 3))     + '\t'   + str(round(width, 3))  + '\t'
+            line = line + str(hrdr['roll_pnt'])  + '\t'   + str(hrdr['foc_len'])  + '\t' 
+            line = line + str(hrdr['defocus'])   + '\t'   + str(hrdr['sim_x'])    + '\t' 
+            line = line + str(hrdr['sim_y'])     + '\t'   + str(hrdr['sim_z'])    + '\t'
+            line = line + str(round(alphaD,4))   + '\t'   + str(round(alphaL,4))  + '\t' 
+            line = line + str(round(center,3))   + '\t'   + str(round(I,2))       + '\t' 
+            line = line + str(round(a_back,2))   + '\t'   + str(round(b_back,2))  + '\n'
 
             save_line = save_line + line
 #
 #--- remove the evt2 file
 #
-            mcf.rm_file(file)
+            mcf.rm_file(hfile)
 #
 #--- if there is any new data, print it out
 #
@@ -188,7 +194,7 @@ def  hrc_gain_fit_voigt(candidate_list):
 #
 #--- print out the fitting result
 #
-#        outfile = house_keeping + 'fitting_results'
+        outfile = data_dir + 'fitting_results'
 
         copied_file = outfile + '~'
         cmd = 'cp ' + outfile + ' ' + copied_file
@@ -238,7 +244,7 @@ def extract_hrc_evt2(obsid):
             file name if the data is extracted. if not 'na'
     """
 #
-#--- write  required arc4gl command
+#--- write  required arc5gl command
 #
     line = 'operation=retrieve\n'
     line = line + 'dataset=flight\n'
@@ -251,66 +257,30 @@ def extract_hrc_evt2(obsid):
     f.write(line)
     f.close()
 
-    cmd1 = "/usr/bin/env PERL5LIB="
-    cmd2 =  ' echo ' +  hakama + ' |arc4gl -U' + dare + ' -Sarcocc -i' + zspace
-    cmd  = cmd1 + cmd2
-
+    cmd =  ' /proj/sot/ska/bin/arc5gl  -user isobe -script ' + zspace + ' > fits_list'
 #
-#--- run arc4gl
+#--- run arc5gl
 #
-    bash(cmd,  env=ascdsenv)
+    os.system(cmd)
     mcf.rm_file(zspace)
 #
 #--- check the data is actually extracted
 #
-    cmd  = 'ls *'+ str(obsid) + '*evt2.fits.gz >' + zspace
-    os.system(cmd)
-    f    = open(zspace, 'r')
+    f    = open('fits_list', 'r')
     data = [line.strip() for line in f.readlines()]
     f.close()
-    mcf.rm_file(zspace)
+    mcf.rm_file('fits_list')
 
-#    data = ['hrcf02451N005_evt2.fits.gz']
-    if len(data) > 0:
-        os.system('gzip -d *.gz')
-        file = data[0]
-        file = file.replace('.gz', '')
-        return file
+    for ent in data:
+        mc = re.search('fits.gz', ent)
+        if mc is not None:
+            cmd = 'gzip -d ' + ent 
+            fits = ent.replace('\.gz', '')
+            return fits
+            break
+
     else:
         return 'na'
-
-
-#---------------------------------------------------------------------------------------------------
-#-- find_header_info: find fits file header information                                          ---
-#---------------------------------------------------------------------------------------------------
-
-def find_header_info(file):
-
-    """
-    find fits file header information
-    Input:      file --- input fits file name
-    Output:     [obsid, detnam, date_obs, date_end, tstart, tstop, ra_pnt, dec_pnt,  ra_nom, dec_nom, roll_pnt, foc_len, defocus, sim_x, sim_y, sim_z]
-    """
-
-    hdr      = pyfits.getheader(file, 1)
-    obsid    = hdr['OBS_ID']
-    detnam   = hdr['DETNAM']
-    date_obs = hdr['DATE-OBS']
-    date_end = hdr['DATE-END']
-    tstart   = hdr['TSTART']
-    tstop    = hdr['TSTOP']
-    ra_pnt   = hdr['RA_PNT']
-    dec_pnt  = hdr['DEC_PNT']
-    roll_pnt = hdr['ROLL_PNT']
-    defocus  = hdr['DEFOCUS']
-    foc_len  = hdr['FOC_LEN']
-    ra_nom   = hdr['RA_NOM']
-    dec_nom  = hdr['DEC_NOM']
-    sim_x    = hdr['SIM_X']
-    sim_y    = hdr['SIM_Y']
-    sim_z    = hdr['SIM_Z']
-
-    return [obsid, detnam, date_obs, date_end, tstart, tstop, ra_pnt, dec_pnt,  ra_nom, dec_nom, roll_pnt, foc_len, defocus, sim_x, sim_y, sim_z]
 
 #---------------------------------------------------------------------------------------------------
 #--- find_center: find the brightest object position from the given event file                   ---
@@ -349,7 +319,8 @@ def find_center(file):
             ystart = ystep * j + ymin
             ystop  = ystart + ystep
 
-            mask = (data.field('X') >= xstart) & (data.field('X') < xstop) & (data.field('Y') >= ystart) & (data.field('Y') < ystop)
+            mask = (data.field('X') >= xstart) & (data.field('X') < xstop) & (data.field('Y') \
+                            >= ystart) & (data.field('Y') < ystop)
             temp = data[mask]
             chipx_p = temp.field('X')
             chipy_p = temp.field('Y')
@@ -369,7 +340,8 @@ def find_center(file):
     ystart = ystep * cposy + ymin
     ystop  = ystart + ystep
 
-    mask = (data.field('X') >= xstart) & (data.field('X') < xstop) & (data.field('Y') >= ystart) & (data.field('Y') < ystop)
+    mask = (data.field('X') >= xstart) & (data.field('X') < xstop) & (data.field('Y') \
+                            >= ystart) & (data.field('Y') < ystop)
     temp = data[mask]
     chipx_p = temp.field('X')
     chipy_p = temp.field('Y')
@@ -428,7 +400,8 @@ def extract_pha(file, x, y, range):
     ymax = y + range
 
     data = pyfits.getdata(file)
-    mask = (data.field('X') >= xmin) & (data.field('X') < xmax) & (data.field('Y') >= ymin) & (data.field('Y') < ymax)
+    mask = (data.field('X') >= xmin) & (data.field('X') < xmax) \
+                    & (data.field('Y') >= ymin) & (data.field('Y') < ymax)
     area = data[mask]
 
     pha  = area.field('PHA')
@@ -445,18 +418,6 @@ class TestFunctions(unittest.TestCase):
     """
     testing functions
     """
-
-#------------------------------------------------------------
-    def test_find_header_info(self):
-
-        file     = 'hrcf14313N001_evt2.fits'
-        results  = find_header_info(file)
-
-        test_results = ['14313', 'HRC-I', '2012-09-27T09:06:31', '2012-09-27T09:31:42', 465123991.90959, 465125502.24717, 332.06915986593, 45.81410073141, 332.06915986593, 45.81410073141, 222.08677687529, 10070.0, 0.0014262644205751, -1.0388663562383, 0.0, 126.98297998999]
-
-        self.assertEquals(results, test_results)
-
-        mcf.rm_file(file)
 
 #------------------------------------------------------------
 
